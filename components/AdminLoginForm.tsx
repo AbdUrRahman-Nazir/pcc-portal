@@ -26,7 +26,7 @@ export function AdminLoginForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-8 sleek-card bg-white shadow-sm">
+    <div className="max-w-lg w-full mx-auto p-10 sleek-card bg-white shadow-sm border border-zinc-200">
       <div className="text-center mb-8">
         <h1 className="text-2xl font-black tracking-tight mb-2">Admin Panel</h1>
         <p className="text-sm text-zinc-500">Sign in to manage PCC queries</p>
