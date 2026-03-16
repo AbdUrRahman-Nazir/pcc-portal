@@ -22,7 +22,7 @@ export default async function QueryDetailPage({ params }: { params: Promise<{ id
   const query = result.query
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <Link href="/admin/dashboard" className="text-zinc-500 text-sm font-medium hover:text-zinc-900 mb-6 inline-block transition-colors">
         &larr; Back to Dashboard
       </Link>

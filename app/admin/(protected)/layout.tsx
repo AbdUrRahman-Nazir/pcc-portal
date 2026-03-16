@@ -18,7 +18,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-zinc-100 flex flex-col md:flex-row">
-      <aside className="w-full md:w-64 bg-zinc-900 text-zinc-300 md:min-h-screen flex flex-col">
+      <aside className="w-full md:w-72 bg-zinc-900 text-zinc-300 md:min-h-screen flex flex-col">
         <div className="p-6">
           <h2 className="text-white font-bold text-lg tracking-tight">PCC Admin</h2>
           <p className="text-xs text-zinc-500 mt-1">{user.email}</p>
