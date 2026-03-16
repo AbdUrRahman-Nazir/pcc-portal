@@ -25,7 +25,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <AdminDashboardTable initialQueries={queries} role={role} />
+      <AdminDashboardTable initialQueries={queries} role={role || ''} />
     </div>
   )
 }
