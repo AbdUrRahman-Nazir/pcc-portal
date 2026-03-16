@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function createAdminClient() {
@@ -23,5 +24,14 @@ export async function createAdminClient() {
         },
       },
     }
+  )
+}
+
+// A pure Supabase JS client that does NOT parse cookies.
+// This is strictly used for DB operations where true RLS bypassing is required (service_role).
+export function createPureAdminClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 }

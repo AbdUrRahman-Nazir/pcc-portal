@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { createAdminClient } from '@/utils/supabase/admin'
+import { createAdminClient, createPureAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function getAdminQueries() {
@@ -112,18 +112,16 @@ export async function deleteAdminQueriesAction(ids: string[]) {
     return { error: 'No queries selected.' }
   }
 
-  const { data, error } = await adminAuth
+  // Use the pure Supabase client to truly bypass RLS (ignores session cookies)
+  const pureAdminClient = createPureAdminClient()
+
+  const { error } = await pureAdminClient
     .from('queries')
     .delete()
     .in('id', ids)
-    .select('id')
 
   if (error) {
     return { error: error.message }
-  }
-
-  if (!data || data.length === 0) {
-    return { error: 'Failed to delete queries from the database. They might have already been deleted.' }
   }
 
   revalidatePath('/', 'layout')
