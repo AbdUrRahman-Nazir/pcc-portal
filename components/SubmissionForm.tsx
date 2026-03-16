@@ -47,7 +47,7 @@ export function SubmissionForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 animate-in fade-in duration-500">
+    <div className="max-w-4xl mx-auto mt-10 animate-in fade-in duration-500 px-4 md:px-0">
       <div className="text-center mb-10">
         <h1 className="text-3xl font-black tracking-tight mb-2">Submit a Query</h1>
         <h2 className="text-3xl font-bold font-urdu text-zinc-600">سوال درج کریں</h2>
