@@ -13,6 +13,8 @@ export function AdminDashboardTable({ initialQueries, role }: AdminDashboardTabl
   const [queries, setQueries] = useState(initialQueries)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteModal, setDeleteModal] = useState<{ mode: 'single' | 'bulk' | 'none', id?: string }>({ mode: 'none' })
+  const [error, setError] = useState<string | null>(null)
   
   // Filters
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
@@ -40,38 +42,49 @@ export function AdminDashboardTable({ initialQueries, role }: AdminDashboardTabl
     setSelectedIds(newSet)
   }
 
-  const handleDeleteSelected = async () => {
+  const triggerDeleteSelected = () => {
     if (selectedIds.size === 0) return
-    if (!confirm(`Are you sure you want to permanently delete ${selectedIds.size} selected queries?`)) return
-    
-    setIsDeleting(true)
-    const result = await deleteAdminQueriesAction(Array.from(selectedIds))
-    
-    if (result.error) {
-      alert(result.error)
-    } else {
-      // Optimiztic update
-      setQueries(queries.filter(q => !selectedIds.has(q.id)))
-      setSelectedIds(new Set())
-    }
-    setIsDeleting(false)
+    setDeleteModal({ mode: 'bulk' })
+    setError(null)
   }
 
-  const handleDeleteSingle = async (id: string, e: React.MouseEvent) => {
-    e.preventDefault() // prevent navigating
+  const triggerDeleteSingle = (id: string, e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
-    if (!confirm('Are you sure you want to permanently delete this query?')) return
-    
+    setDeleteModal({ mode: 'single', id })
+    setError(null)
+  }
+
+  const executeDelete = async () => {
     setIsDeleting(true)
-    const result = await deleteAdminQueriesAction([id])
+    setError(null)
+    
+    let idsToDelete: string[] = []
+    if (deleteModal.mode === 'bulk') {
+      idsToDelete = Array.from(selectedIds)
+    } else if (deleteModal.mode === 'single' && deleteModal.id) {
+      idsToDelete = [deleteModal.id]
+    }
+
+    if (idsToDelete.length === 0) {
+      setIsDeleting(false)
+      return
+    }
+
+    const result = await deleteAdminQueriesAction(idsToDelete)
     
     if (result.error) {
-      alert(result.error)
+      setError(result.error)
     } else {
-      setQueries(queries.filter(q => q.id !== id))
-      const newSet = new Set(selectedIds)
-      newSet.delete(id)
-      setSelectedIds(newSet)
+      setQueries(queries.filter(q => !idsToDelete.includes(q.id)))
+      if (deleteModal.mode === 'bulk') {
+        setSelectedIds(new Set())
+      } else if (deleteModal.mode === 'single' && deleteModal.id) {
+        const newSet = new Set(selectedIds)
+        newSet.delete(deleteModal.id)
+        setSelectedIds(newSet)
+      }
+      setDeleteModal({ mode: 'none' })
     }
     setIsDeleting(false)
   }
@@ -101,7 +114,7 @@ export function AdminDashboardTable({ initialQueries, role }: AdminDashboardTabl
 
           <div className="w-full sm:w-auto flex justify-end">
             <button
-              onClick={handleDeleteSelected}
+              onClick={triggerDeleteSelected}
               disabled={selectedIds.size === 0 || isDeleting}
               className="px-4 py-2 bg-red-600/10 text-red-700 hover:bg-red-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-semibold text-sm rounded-sm border border-red-200"
             >
@@ -185,7 +198,7 @@ export function AdminDashboardTable({ initialQueries, role }: AdminDashboardTabl
                     <td className="px-6 py-5 text-right space-x-3 whitespace-nowrap">
                       {role === 'superadmin' && (
                          <button
-                           onClick={(e) => handleDeleteSingle(q.id, e)}
+                           onClick={(e) => triggerDeleteSingle(q.id, e)}
                            disabled={isDeleting}
                            className="text-red-500 font-medium hover:underline text-sm disabled:opacity-50"
                          >
@@ -206,6 +219,41 @@ export function AdminDashboardTable({ initialQueries, role }: AdminDashboardTabl
           </table>
         </div>
       </div>
+
+      {deleteModal.mode !== 'none' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-md p-6 border border-zinc-200 shadow-lg">
+            
+            {error && <div className="mb-4 p-3 bg-red-50 text-red-800 text-sm border-l-2 border-red-500">{error}</div>}
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold tracking-tight mb-2 text-red-600">
+                Delete {deleteModal.mode === 'bulk' ? 'Queries' : 'Query'}
+              </h3>
+              <p className="text-sm text-zinc-600">
+                Are you absolutely sure you want to permanently delete {deleteModal.mode === 'bulk' ? <strong>{selectedIds.size} selected queries</strong> : <strong>this query</strong>}? This action cannot be undone.
+              </p>
+              <div className="flex justify-end space-x-3 mt-6">
+                <button 
+                  type="button" 
+                  onClick={() => { setDeleteModal({ mode: 'none' }); setError(null) }} 
+                  className="sleek-button-outline"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={executeDelete} 
+                  disabled={isDeleting} 
+                  className="sleek-button bg-red-600 text-white hover:bg-red-700"
+                >
+                  {isDeleting ? 'Deleting...' : 'Yes, Delete'}
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   )
 }
