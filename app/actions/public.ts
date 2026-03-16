@@ -1,10 +1,10 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function submitQueryAction(formData: FormData) {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
   
   const query_category = formData.get('query_category') as string
   const charity_name = formData.get('charity_name') as string
@@ -58,8 +58,6 @@ export async function submitQueryAction(formData: FormData) {
   revalidatePath('/')
   return { success: true, trackingId: data.id }
 }
-
-import { createAdminClient } from '@/utils/supabase/admin'
 
 export async function trackQueryAction(trackingInput: string) {
   const supabase = await createAdminClient()
