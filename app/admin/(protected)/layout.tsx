@@ -2,6 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { logoutAdminAction } from '@/app/actions/auth'
+import { AdminSidebarNav } from '@/components/AdminSidebarNav'
 
 export default async function AdminLayout({
   children,
@@ -23,12 +24,7 @@ export default async function AdminLayout({
           <p className="text-xs text-zinc-500 mt-1">{user.email}</p>
         </div>
         
-        <nav className="flex-1 px-4 space-y-2">
-          <Link href="/admin/dashboard" className="block px-4 py-2 hover:bg-zinc-800 rounded-sm hover:text-white transition-colors">
-            Dashboard
-          </Link>
-          {/* Roles will dictate what else they see, but for now just single dashboard link */}
-        </nav>
+        <AdminSidebarNav role={user.app_metadata?.role || ''} />
 
         <div className="p-4 mt-auto">
           <form action={logoutAdminAction}>
