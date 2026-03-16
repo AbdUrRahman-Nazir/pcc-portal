@@ -2,8 +2,9 @@ import { getAdminQuery } from '@/app/actions/admin'
 import Link from 'next/link'
 import { QueryReplyForm } from '@/components/QueryReplyForm'
 
-export default async function QueryDetailPage({ params }: { params: { id: string } }) {
-  const result = await getAdminQuery(params.id)
+export default async function QueryDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
+  const result = await getAdminQuery(resolvedParams.id)
 
   if (result.error) {
     return (

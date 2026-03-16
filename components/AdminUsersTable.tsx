@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createUserAction, updateUserRoleAction, deleteUserAction } from '@/app/actions/users'
+import { createUserAction, updateAdminUserAction, deleteUserAction } from '@/app/actions/users'
 import { User } from '@supabase/supabase-js'
 
 interface AdminUsersTableProps {
@@ -58,7 +58,7 @@ export function AdminUsersTable({ users, currentUserId }: AdminUsersTableProps) 
     if (!selectedUser) return
     setIsSubmitting(true)
     setError(null)
-    const result = await updateUserRoleAction(selectedUser.id, new FormData(e.currentTarget))
+    const result = await updateAdminUserAction(selectedUser.id, new FormData(e.currentTarget))
     if (result.error) setError(result.error)
     else close()
     setIsSubmitting(false)
@@ -155,7 +155,15 @@ export function AdminUsersTable({ users, currentUserId }: AdminUsersTableProps) 
 
             {modal === 'edit' && selectedUser && (
               <form onSubmit={handleEdit} className="space-y-4">
-                <h3 className="text-xl font-bold tracking-tight mb-4">Edit Role for {selectedUser.email}</h3>
+                <h3 className="text-xl font-bold tracking-tight mb-4">Edit Profile for {selectedUser.email}</h3>
+                <div>
+                  <label className="block text-sm font-semibold mb-1">Email <span className="text-zinc-400 font-normal">(Optional)</span></label>
+                  <input type="email" name="email" defaultValue={selectedUser.email} className="sleek-input" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1">New Password <span className="text-zinc-400 font-normal">(Leave blank to keep current)</span></label>
+                  <input type="password" name="password" minLength={6} className="sleek-input" placeholder="Min 6 characters" />
+                </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1">Role</label>
                   <select name="role" required defaultValue={selectedUser.app_metadata?.role || 'misc'} className="sleek-input bg-white">
@@ -164,7 +172,7 @@ export function AdminUsersTable({ users, currentUserId }: AdminUsersTableProps) 
                 </div>
                 <div className="flex justify-end space-x-3 mt-6">
                   <button type="button" onClick={close} className="sleek-button-outline">Cancel</button>
-                  <button type="submit" disabled={isSubmitting} className="sleek-button-primary">{isSubmitting ? 'Saving...' : 'Save Role'}</button>
+                  <button type="submit" disabled={isSubmitting} className="sleek-button-primary">{isSubmitting ? 'Saving...' : 'Save Changes'}</button>
                 </div>
               </form>
             )}

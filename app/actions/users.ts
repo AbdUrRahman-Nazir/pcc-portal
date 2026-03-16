@@ -57,7 +57,7 @@ export async function createUserAction(formData: FormData) {
   return { success: true, user: newUser }
 }
 
-export async function updateUserRoleAction(userId: string, formData: FormData) {
+export async function updateAdminUserAction(userId: string, formData: FormData) {
   const supabase = await createAdminClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -66,6 +66,8 @@ export async function updateUserRoleAction(userId: string, formData: FormData) {
   }
 
   const role = formData.get('role') as string
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
 
   if (!['registration', 'renewal', 'observation', 'misc', 'superadmin'].includes(role)) {
     return { error: 'Invalid role.' }
@@ -75,9 +77,20 @@ export async function updateUserRoleAction(userId: string, formData: FormData) {
     return { error: 'You cannot remove your own superadmin privileges.' }
   }
 
-  const { error } = await supabase.auth.admin.updateUserById(userId, {
+  const updateData: any = {
     app_metadata: { role }
-  })
+  }
+
+  if (email) {
+    updateData.email = email
+    updateData.email_confirm = true
+  }
+
+  if (password) {
+    updateData.password = password
+  }
+
+  const { error } = await supabase.auth.admin.updateUserById(userId, updateData)
 
   if (error) {
     return { error: error.message }
