@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
+import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function getAdminQueries() {
@@ -95,5 +96,31 @@ export async function submitAdminReply(id: string, formData: FormData) {
   revalidatePath(`/admin/query/${id}`)
   revalidatePath('/admin/dashboard')
   
+  return { success: true }
+}
+
+export async function deleteAdminQueriesAction(ids: string[]) {
+  // Use admin client to bypass RLS for deletions
+  const adminAuth = await createAdminClient()
+  const { data: { user } } = await adminAuth.auth.getUser()
+
+  if (!user || user.app_metadata.role !== 'superadmin') {
+    return { error: 'Unauthorized. Only Super Admins can delete queries.' }
+  }
+
+  if (!ids || ids.length === 0) {
+    return { error: 'No queries selected.' }
+  }
+
+  const { error } = await adminAuth
+    .from('queries')
+    .delete()
+    .in('id', ids)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/admin/dashboard')
   return { success: true }
 }
