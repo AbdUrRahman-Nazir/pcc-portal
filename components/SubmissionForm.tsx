@@ -106,7 +106,7 @@ export function SubmissionForm() {
             <span>Query Details</span>
             <span className="font-urdu text-xs text-zinc-500">سوال کی تفصیل</span>
           </label>
-          <textarea required id="message" name="message" rows={5} className="sleek-input h-auto py-3 resize-y" placeholder="Write your message here..."></textarea>
+          <textarea required id="message" name="message" rows={8} className="sleek-input h-auto py-3 resize-y" placeholder="Write your message here..."></textarea>
         </div>
 
         <button 
