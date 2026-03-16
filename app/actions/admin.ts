@@ -112,15 +112,20 @@ export async function deleteAdminQueriesAction(ids: string[]) {
     return { error: 'No queries selected.' }
   }
 
-  const { error } = await adminAuth
+  const { data, error } = await adminAuth
     .from('queries')
     .delete()
     .in('id', ids)
+    .select('id')
 
   if (error) {
     return { error: error.message }
   }
 
-  revalidatePath('/admin/dashboard')
+  if (!data || data.length === 0) {
+    return { error: 'Failed to delete queries from the database. They might have already been deleted.' }
+  }
+
+  revalidatePath('/', 'layout')
   return { success: true }
 }
