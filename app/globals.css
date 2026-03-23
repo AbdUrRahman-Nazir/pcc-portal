@@ -4,33 +4,53 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    /* PCC Brand — Deep Emerald Green from the logo */
+    --pcc-50: 152 81% 96%;
+    --pcc-100: 149 80% 90%;
+    --pcc-200: 152 76% 80%;
+    --pcc-300: 156 72% 67%;
+    --pcc-400: 158 64% 52%;
+    --pcc-500: 160 84% 39%;
+    --pcc-600: 161 94% 30%;
+    --pcc-700: 163 94% 24%;
+    --pcc-800: 163 88% 20%;
+    --pcc-900: 164 86% 16%;
+    --pcc-950: 166 91% 9%;
+
+    /* Gold accent */
+    --gold-50: 48 96% 89%;
+    --gold-100: 48 97% 77%;
+    --gold-200: 46 97% 65%;
+    --gold-300: 43 96% 56%;
+    --gold-400: 38 92% 50%;
+    --gold-500: 32 95% 44%;
+    --gold-600: 26 90% 37%;
+
+    /* Core semantic tokens */
+    --background: 150 20% 97%;
+    --foreground: 164 30% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 164 30% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --popover-foreground: 164 30% 10%;
+    --primary: 163 94% 24%;
+    --primary-foreground: 0 0% 99%;
+    --secondary: 150 15% 94%;
+    --secondary-foreground: 164 30% 15%;
+    --muted: 150 10% 93%;
+    --muted-foreground: 160 10% 45%;
+    --accent: 150 15% 94%;
+    --accent-foreground: 164 30% 15%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 99%;
+    --border: 150 12% 88%;
+    --input: 150 12% 86%;
+    --ring: 163 94% 24%;
   }
 
-  /* User requested NO ANIMATIONS. Disabling globally */
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
+  /* No scale transforms globally. Only subtle color/opacity transitions allowed */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
@@ -43,19 +63,84 @@
   }
 }
 
-/* Base utility for sleek flat design - no shadows or minimal */
-.sleek-card {
-  @apply bg-card text-card-foreground border border-border sm:rounded-none md:rounded-sm;
+/* ─── PCC Design System ─── */
+
+/* Card with subtle shadow */
+.pcc-card {
+  @apply bg-card text-card-foreground border border-border rounded-lg;
 }
-.sleek-input {
-  @apply flex h-10 w-full border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:rounded-none md:rounded-sm;
+
+/* Input styling */
+.pcc-input {
+  @apply flex h-10 w-full border border-input bg-white px-3 py-2 text-sm ring-offset-background
+    file:border-0 file:bg-transparent file:text-sm file:font-medium
+    placeholder:text-muted-foreground
+    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-primary/50
+    disabled:cursor-not-allowed disabled:opacity-50
+    rounded-md transition-colors duration-150;
 }
-.sleek-button {
-  @apply inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 sm:rounded-none md:rounded-sm;
+
+/* Textarea variant */
+.pcc-textarea {
+  @apply pcc-input min-h-[200px] py-3 resize-y;
+  height: auto;
 }
-.sleek-button-primary {
-  @apply sleek-button bg-primary text-primary-foreground hover:bg-primary/90;
+
+/* Buttons */
+.pcc-btn {
+  @apply inline-flex items-center justify-center whitespace-nowrap text-sm font-semibold
+    ring-offset-background
+    disabled:pointer-events-none disabled:opacity-50
+    h-10 px-5 py-2 rounded-md transition-colors duration-150;
 }
-.sleek-button-outline {
-  @apply sleek-button border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+
+.pcc-btn-primary {
+  @apply pcc-btn bg-primary text-primary-foreground hover:bg-emerald-800;
 }
+
+.pcc-btn-outline {
+  @apply pcc-btn border border-input bg-white text-foreground hover:bg-accent hover:text-accent-foreground;
+}
+
+.pcc-btn-ghost {
+  @apply pcc-btn bg-transparent text-foreground hover:bg-accent;
+}
+
+.pcc-btn-destructive {
+  @apply pcc-btn bg-destructive text-destructive-foreground hover:bg-red-700;
+}
+
+/* Badge system */
+.pcc-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide border;
+}
+
+.pcc-badge-pending {
+  @apply pcc-badge border-amber-200 text-amber-700 bg-amber-50;
+}
+
+.pcc-badge-replied {
+  @apply pcc-badge border-blue-200 text-blue-700 bg-blue-50;
+}
+
+.pcc-badge-resolved {
+  @apply pcc-badge border-emerald-200 text-emerald-700 bg-emerald-50;
+}
+
+/* Stat card for dashboard */
+.pcc-stat-card {
+  @apply pcc-card p-5 flex flex-col gap-1;
+}
+
+/* Category colors */
+.pcc-cat-registration { @apply border-l-4 border-l-blue-500; }
+.pcc-cat-renewal { @apply border-l-4 border-l-teal-500; }
+.pcc-cat-observation { @apply border-l-4 border-l-amber-500; }
+.pcc-cat-general { @apply border-l-4 border-l-slate-500; }
+
+/* ─── Legacy compatibility aliases (old class names → new system) ─── */
+.sleek-card { @apply pcc-card; }
+.sleek-input { @apply pcc-input; }
+.sleek-button { @apply pcc-btn; }
+.sleek-button-primary { @apply pcc-btn-primary; }
+.sleek-button-outline { @apply pcc-btn-outline; }

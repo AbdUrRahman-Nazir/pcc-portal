@@ -6,8 +6,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const notoNastaliq = Noto_Nastaliq_Urdu({ subsets: ["arabic"], variable: "--font-urdu", weight: ["400", "700"] });
 
 export const metadata: Metadata = {
-  title: "PCC Query Management Portal",
-  description: "Punjab Charity Commission Public Queries Portal",
+  title: "PCC Complaint Management Portal",
+  description: "Punjab Charity Commission — Submit and track your complaints online",
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${notoNastaliq.variable} font-sans bg-zinc-50 text-zinc-900 min-h-screen antialiased`}>
+      <body className={`${inter.variable} ${notoNastaliq.variable} font-sans bg-background text-foreground min-h-screen antialiased`}>
         {children}
       </body>
     </html>

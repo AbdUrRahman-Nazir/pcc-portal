@@ -14,15 +14,15 @@ export default async function UsersPage() {
   const result = await getUsersAction()
 
   if (result.error) {
-    return <div className="p-4 bg-red-50 text-red-800">{result.error}</div>
+    return <div className="p-4 bg-red-50 text-red-800 border border-red-200 rounded-lg">{result.error}</div>
   }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Manage Admins</h1>
-          <p className="text-zinc-500 text-sm">Add, configure roles, or remove administrator access.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Manage Admins</h1>
+          <p className="text-muted-foreground text-sm mt-0.5">Add, configure roles, or remove administrator access.</p>
         </div>
       </div>
 

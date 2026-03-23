@@ -115,6 +115,41 @@ export async function deleteAdminQueriesAction(ids: string[]) {
   // Use the pure Supabase client to truly bypass RLS (ignores session cookies)
   const pureAdminClient = createPureAdminClient()
 
+  // First, fetch the queries to get their attachment/voice URLs for Storage cleanup
+  const { data: queries } = await pureAdminClient
+    .from('queries')
+    .select('id, attachment_urls, voice_url')
+    .in('id', ids)
+
+  // Clean up Storage files for each query
+  if (queries && queries.length > 0) {
+    for (const q of queries) {
+      const filesToDelete: string[] = []
+
+      // Extract storage paths from public URLs
+      if (q.attachment_urls && q.attachment_urls.length > 0) {
+        for (let i = 0; i < q.attachment_urls.length; i++) {
+          filesToDelete.push(`images/${q.id}/${i}.jpg`)
+          filesToDelete.push(`images/${q.id}/${i}.jpeg`)
+          filesToDelete.push(`images/${q.id}/${i}.png`)
+          filesToDelete.push(`images/${q.id}/${i}.webp`)
+        }
+      }
+
+      if (q.voice_url) {
+        filesToDelete.push(`voice/${q.id}/recording.webm`)
+        filesToDelete.push(`voice/${q.id}/recording.ogg`)
+        filesToDelete.push(`voice/${q.id}/recording.mp4`)
+      }
+
+      if (filesToDelete.length > 0) {
+        // Supabase Storage silently ignores files that don't exist, so this is safe
+        await pureAdminClient.storage.from('query-attachments').remove(filesToDelete)
+      }
+    }
+  }
+
+  // Now delete the database rows
   const { error } = await pureAdminClient
     .from('queries')
     .delete()
